@@ -99,7 +99,7 @@ Default: `false`
 
 Outputs statistics once all images have been handled.
 ```bash
-[09:47:43] gulp-tinypng-compress Skipped: 0 images, Compressed: 1 image, Savings: 3.98 KB (ratio: 0.4109)
+[09:47:43] gulp-tinypng-extended Skipped: 0 images, Compressed: 1 image, Savings: 3.98 KB (ratio: 0.4109)
 ```
 
 #### options.log
