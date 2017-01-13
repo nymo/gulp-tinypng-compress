@@ -167,7 +167,7 @@ function TinyPNG(opt, obj) {
                 var file = this.file;
 
                 request.post({
-                    url: 'https://api.tinypng.com/shrink',
+                    url: 'https://api.tinify.com/shrink',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Authorization': 'Basic ' + self.conf.token
