@@ -9,8 +9,9 @@
 An actively maintained & developed fork of [gulp-tinypng-compress](https://github.com/stnvh/gulp-tinypng-compress).
 
 *Main differences from gulp-tinypng-compress:*
-- Updated minimatch plugin to current version to avoid deprecated warnings
 - Added new option (keepOriginal) to override the original image instead of creating a new compressed file in the output path
+- Added new optiopn (keepMetadata) to preserve metadata. Currently only copyright and creation date is supported.
+- Updated minimatch plugin to current version to avoid deprecated warnings
 
 ## Install
 *Requires node `0.10.x` or above*
@@ -85,6 +86,12 @@ Default `True`
 With this option you can tell the plugin to override your original file with the compressed one. The gulp.dest() output
 path for the images is then being ignored. 
 
+#### options.keepMetadata
+Type: `Boolean`
+Default `False`
+
+If you want to keep the metadata in the compressed image then you should set this option to true. Because this adds
+some additional bytes to the compressed file it is disabled by default.
 
 #### options.summarize/summarise
 Type: `Boolean`
