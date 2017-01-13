@@ -2,7 +2,7 @@
 [![Downloaded](https://img.shields.io/npm/dm/gulp-tinypng-extended.svg)][npm]
 [![Build](https://img.shields.io/travis/nymo/gulp-tinypng-extended.svg)][travis]
 
-# gulp-tinypng-compress
+# gulp-tinypng-extended
 
 > [TinyPNG](https://tinypng.com) API wrapper for compressing PNG & JPG images
 

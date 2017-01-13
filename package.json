@@ -3,7 +3,10 @@
   "version": "1.4.1",
   "description": "TinyPNG API wrapper for compressing PNG & JPG images",
   "main": "index.js",
-  "repository": "nymo/gulp-tinypng-extended",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nymo/gulp-tinypng-extended.git"
+  },
   "scripts": {
     "test": "mocha"
   },
