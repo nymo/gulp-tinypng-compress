@@ -33,7 +33,8 @@ function TinyPNG(opt, obj) {
             summarize: false,
             parallel: true,
             parallelMax: 5,
-            keepOriginal: true
+            keepOriginal: true,
+            keepMetadata: false,
         }
     };
 
@@ -189,9 +190,13 @@ function TinyPNG(opt, obj) {
                         }
 
                         if(!err) {
-                            if(data.error) err = this.handler(data, res.statusCode); else if(data.output.url) {
-                                info.url = data.output.url;
-                            } else err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
+                            if(data.error){
+                                err = this.handler(data, res.statusCode);
+                            } else if (data.output.url) {
+                                info.url = self.conf.options.keepMetadata ? res.headers.location : data.output.url;
+                            } else {
+                                err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
+                            }
                         }
                     } else {
                         err = new Error('No content returned from TinyPNG API for' + file.relative);
@@ -202,10 +207,18 @@ function TinyPNG(opt, obj) {
             },
 
             download: function(url, cb) {
-                request.get({
+                var options = {
                     url: url,
                     encoding: null
-                }, function(err, res, body) {
+                };
+
+                if (self.conf.options.keepMetadata) {
+                    options.json = { preserve: ["copyright", "creation"] };
+                    options.headers = {
+                        'Authorization': 'Basic ' + self.conf.token
+                    };
+                }
+                request.get(options, function(err, res, body) {
                     err = err ? new Error('Download failed for ' + url + ' with error: ' + err.message) : false;
                     cb(err, new Buffer(body));
                 });
