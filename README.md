@@ -10,7 +10,7 @@ An actively maintained & developed fork of [gulp-tinypng-compress](https://githu
 
 *Main differences from gulp-tinypng-compress:*
 - Added new option (keepOriginal) to override the original image instead of creating a new compressed file in the output path
-- Added new optiopn (keepMetadata) to preserve metadata. Currently only copyright and creation date is supported.
+- Added new option (keepMetadata) to preserve metadata. Currently only copyright and creation date is supported.
 - Updated minimatch plugin to current version to avoid deprecated warnings
 
 ## Install
