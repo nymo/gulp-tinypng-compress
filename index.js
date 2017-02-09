@@ -68,8 +68,7 @@ function TinyPNG(opt, obj) {
 
     this.stream = function() {
         var self = this,
-            opt = this.conf.options,
-            emitted = false;
+            opt = this.conf.options;
 
         return (opt.parallel ? throughParallel : through).obj({maxConcurrency: opt.parallelMax}, function(file, enc, cb) {
             if(self.utils.glob(file, opt.ignore)) return cb();
@@ -135,12 +134,15 @@ function TinyPNG(opt, obj) {
             }
         })
         .on('error', function(err) {
-            emitted = true; // surely a method in the stream to handle this?
+            console.log(err.message);
             self.stats.skipped++;
             self.utils.log(err.message);
         })
         .on('end', function() {
-            if(!emitted && opt.sigFile) self.hash.write(); // write sigs after complete
+            if(opt.sigFile) {
+                // write sigs after complete or but also when error occured in order to keep track of already compressed files
+                self.hash.write();
+            }
             if(opt.summarize) {
                 var stats = self.stats,
                     info = util.format('Skipped: %s image%s, Compressed: %s image%s, Savings: %s (ratio: %s)',
@@ -183,20 +185,24 @@ function TinyPNG(opt, obj) {
                     if(err) {
                         err = new Error('Upload failed for ' + file.relative + ' with error: ' + err.message);
                     } else if(body) {
-                        try {
-                            data = JSON.parse(body);
-                        } catch(e) {
-                            err = new Error('Upload response JSON parse failed, invalid data returned from API. Failed with message: ' + e.message);
-                        }
-
-                        if(!err) {
-                            if(data.error){
-                                err = this.handler(data, res.statusCode);
-                            } else if (data.output.url) {
-                                info.url = self.conf.options.keepMetadata ? res.headers.location : data.output.url;
-                            } else {
-                                err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
+                        if(res.statusCode == 200 || res.statusCode == 201) {
+                            try {
+                                data = JSON.parse(body);
+                            } catch(e) {
+                                err = new Error('Upload response JSON parse failed, invalid data returned from API. Failed with message: ' + e.message);
                             }
+
+                            if(!err) {
+                                if(data.error){
+                                    err = this.handler(data, res.statusCode);
+                                } else if (data.output.url) {
+                                    info.url = self.conf.options.keepMetadata ? res.headers.location : data.output.url;
+                                } else {
+                                    err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
+                                }
+                            }   
+                        } else {
+                            err = new Error('Error: Statuscode ' + res.statusCode + ' returned');
                         }
                     } else {
                         err = new Error('No content returned from TinyPNG API for' + file.relative);
