@@ -13,8 +13,8 @@ var fs = require('fs'),
 
 var key = 'KHOsJMrP6w-X3FVuyXdevV-vCnDDbqo9',
 	cwd = __dirname,
-	TestFile = function(small) {
-		var file = cwd + '/assets/image' + (small ? '_small' : '') + '.png';
+	TestFile = function(type) {
+		var file = cwd + '/assets/image' + (type ? '_' + type : '') + '.png';
 
 		return new gutil.File({
 			path: 'image.png',
@@ -66,7 +66,8 @@ describe('tinypng', function() {
 	describe('#request', function() {
 		var struct = ['file', 'upload', 'download', 'handler', 'get'],
 			inst = new TinyPNG(key),
-			image = new TestFile();
+			image = new TestFile(),
+			empty_image = new TestFile('empty');
 
 		it('returns correct object', function() {
 			expect(inst.request()).to.have.all.keys(struct);
@@ -98,6 +99,17 @@ describe('tinypng', function() {
 					expect(err).to.be.instanceof(Error);
 					expect(err.message).to.equal('Error: Statuscode 502 returned');
 					nock.cleanAll();
+					done();
+				});
+
+			});
+
+			it('upload empty file should throw error, skip and not break the plugin', function(done) {
+				this.timeout(2000);
+
+				inst.request(empty_image).upload(function(err, data) {
+					expect(err).to.be.instanceof(Error);
+					expect(err.message).to.equal('Error: Empty or broken images could not be send image.png');
 					done();
 				});
 

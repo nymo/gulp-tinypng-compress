@@ -168,6 +168,12 @@ function TinyPNG(opt, obj) {
             upload: function(cb) {
                 var file = this.file;
 
+                //do not process empty files
+                if(file.contents <= 0) {
+                    err = new Error('Error: Empty or broken images could not be send ' + file.relative);
+                    return cb(err);
+                }
+
                 request.post({
                     url: 'https://api.tinify.com/shrink',
                     headers: {
