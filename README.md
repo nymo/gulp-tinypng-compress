@@ -8,13 +8,14 @@
 
 An actively maintained & developed fork of [gulp-tinypng-compress](https://github.com/stnvh/gulp-tinypng-compress).
 
-*Main differences from gulp-tinypng-compress:*
+## Main differences from gulp-tinypng-compress
 - Added new option (keepMetadata) to preserve metadata. Currently only copyright and creation date is supported.
 - Added new option (keepOriginal) to override the original image instead of creating a new compressed file in the output path.
 - Updated minimatch plugin to current version to avoid deprecated warnings.
 - Fixed Problem with Bad Gateway errors receiving from the api. On error on one file the gulp process is still running and
 compressing the next images.
 - On error the signature file is still being written for all successfully compressed files.
+- Added check for empty or broken images to be skipped and not send
 
 ## Install
 *Requires node `0.10.x` or above*
