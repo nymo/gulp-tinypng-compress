@@ -5,6 +5,7 @@ var fs = require('fs'),
 	crypto = require('crypto'),
 	expect = require('chai').expect,
     gutil = require('gulp-util'),
+    nock = require('nock'),
 
 	dry = process.env.PNG_DRY ? true : false,
 
@@ -84,6 +85,22 @@ describe('tinypng', function() {
 
 					done();
 				});
+			});
+
+			it('uploads and returns bad gateway error', function(done) {
+				this.timeout(20010);
+
+				var gateway = nock('https://api.tinify.com')
+								.post('/shrink')
+								.reply(502, '<html><head><title>502 Bad Gateway</title></head><body><h1>502 Bad Gateway</h1></body></html>');
+
+				inst.request(image).upload(function(err, data) {
+					expect(err).to.be.instanceof(Error);
+					expect(err.message).to.equal('Error: Statuscode 502 returned');
+					nock.cleanAll();
+					done();
+				});
+
 			});
 		});
 
