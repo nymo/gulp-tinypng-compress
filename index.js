@@ -232,7 +232,14 @@ function TinyPNG(opt, obj) {
                 }
                 request.get(options, function(err, res, body) {
                     err = err ? new Error('Download failed for ' + url + ' with error: ' + err.message) : false;
-                    cb(err, new Buffer(body));
+                    var buffer = false;
+                     try {
+                        buffer = new Buffer(body); 
+                    } catch(err) {
+                        return cb(new Error('Empty Body for Download with error: ' + err.message));
+                    }
+                    
+                    return cb(err, buffer);
                 });
             },
 
