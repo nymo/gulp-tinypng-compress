@@ -17,7 +17,7 @@ var PLUGIN_NAME = 'gulp-tinypng-extended',
  * TinyPNG class
  * @todo Move into own library
  */
-function TinyPNG(opt, obj) {
+function TinyPNG(opt, obj){
 
     var self = this;
 
@@ -51,7 +51,7 @@ function TinyPNG(opt, obj) {
         retried: []
     };
 
-    this.init = function(opt) {
+    this.init = function(opt){
         if(typeof opt !== 'object') opt = {key: opt};
 
         opt = util._extend(this.conf.options, opt);
@@ -70,31 +70,31 @@ function TinyPNG(opt, obj) {
         return this;
     };
 
-    this.stream = function() {
+    this.stream = function(){
         var self = this,
             opt = this.conf.options;
 
-        return (opt.parallel ? throughParallel : through).obj({maxConcurrency: opt.parallelMax}, function(file, enc, cb) {
+        return (opt.parallel ? throughParallel : through).obj({maxConcurrency: opt.parallelMax}, function(file, enc, cb){
             if(self.utils.glob(file, opt.ignore)) return cb();
 
-            if(file.isNull()) {
+            if(file.isNull()){
                 return cb();
             }
 
-            if(file.isStream()) {
+            if(file.isStream()){
                 this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported'));
                 return cb();
             }
 
-            if(file.isBuffer()) {
+            if(file.isBuffer()){
                 var hash = null;
 
-                if(opt.sigFile && !self.utils.glob(file, opt.force)) {
+                if(opt.sigFile && !self.utils.glob(file, opt.force)){
                     var result = self.hash.compare(file);
 
                     hash = result.hash;
 
-                    if(result.match) {
+                    if(result.match){
                         self.utils.log('[skipping] ' + chalk.green('✔ ') + file.relative);
                         self.stats.skipped++;
 
@@ -102,8 +102,8 @@ function TinyPNG(opt, obj) {
                     }
                 }
 
-                self.request(file).get(function(err, tinyFile) {
-                    if(err) {
+                self.request(file).get(function(err, tinyFile){
+                    if(err){
                         this.emit('error', new PluginError(PLUGIN_NAME, err));
                         return cb();
                     }
@@ -114,22 +114,22 @@ function TinyPNG(opt, obj) {
                     self.stats.total.in += file.contents.toString().length;
                     self.stats.total.out += tinyFile.contents.toString().length;
 
-                    if(opt.sigFile) {
+                    if(opt.sigFile){
                         var curr = {
                             file: file,
                             hash: hash
                         };
 
-                        if(opt.sameDest) {
+                        if(opt.sameDest){
                             curr.file = tinyFile;
                             curr.hash = self.hash.calc(tinyFile);
                         }
 
                         self.hash.update(curr.file, curr.hash);
                     }
-                    if(opt.keepOriginal === false) {
+                    if(opt.keepOriginal === false){
                         fs.writeFile(file.path, tinyFile.contents);
-                    } else {
+                    } else{
                         this.push(tinyFile);
                     }
 
@@ -137,17 +137,17 @@ function TinyPNG(opt, obj) {
                 }.bind(this)); // maintain stream context
             }
         })
-            .on('error', function(err) {
+            .on('error', function(err){
                 console.log(err.message);
                 self.stats.skipped++;
                 self.utils.log(err.message);
             })
-            .on('end', function() {
-                if(opt.sigFile) {
+            .on('end', function(){
+                if(opt.sigFile){
                     // write sigs after complete or but also when error occured in order to keep track of already compressed files
                     self.hash.write();
                 }
-                if(opt.summarize) {
+                if(opt.summarize){
                     var stats = self.stats,
                         info = util.format('Skipped: %s image%s, Retries: %s, Compressed: %s image%s, Savings: %s (ratio: %s)',
                             stats.skipped,
@@ -161,9 +161,9 @@ function TinyPNG(opt, obj) {
 
                     self.utils.log(info, true);
 
-                    if(stats.retries > 0) {
+                    if(stats.retries > 0){
                         self.utils.log('Retry Attempts:', true);
-                        stats.retried.forEach(function(item) {
+                        stats.retried.forEach(function(item){
                             self.utils.log(item.file + ': ' + item.attempts + ' attempts', true);
                         });
                     }
@@ -171,17 +171,17 @@ function TinyPNG(opt, obj) {
             });
     };
 
-    this.request = function(file, cb) {
+    this.request = function(file, cb){
         var self = this;
 
         return {
             file: file,
 
-            upload: function(cb) {
+            upload: function(cb){
                 var file = this.file;
 
                 //do not process empty files
-                if(file.contents <= 0) {
+                if(file.contents <= 0){
                     err = new Error('Error: Empty or broken images could not be send ' + file.relative);
                     return cb(err);
                 }
@@ -197,14 +197,14 @@ function TinyPNG(opt, obj) {
                     maxAttempts: self.conf.retryAttempts,
                     retryDelay: self.conf.retryDelay,
                     retryStrategy: request.RetryStrategies.HTTPOrNetworkError // (default) retry on 5xx or network errors
-                }, function(err, res, body) {
+                }, function(err, res, body){
                     var data,
                         info = {
                             url: false,
                             count: (res && 'headers' in res && res.headers['compression-count']) || 0
                         };
 
-                    if(res.attempts > 1) {
+                    if(res.attempts > 1){
                         self.stats.retries += res.attempts - 1;
                         self.stats.retried.push({
                             file: file.relative,
@@ -212,29 +212,29 @@ function TinyPNG(opt, obj) {
                         });
                     }
 
-                    if(err) {
+                    if(err){
                         err = new Error('Upload failed for ' + file.relative + ' with error: ' + err.message);
-                    } else if(body) {
-                        if(res.statusCode == 200 || res.statusCode == 201) {
-                            try {
+                    } else if(body){
+                        if(res.statusCode == 200 || res.statusCode == 201){
+                            try{
                                 data = JSON.parse(body);
-                            } catch(e) {
+                            } catch(e){
                                 err = new Error('Upload response JSON parse failed, invalid data returned from API. Failed with message: ' + e.message);
                             }
 
-                            if(!err) {
-                                if(data.error) {
+                            if(!err){
+                                if(data.error){
                                     err = this.handler(data, res.statusCode);
-                                } else if(data.output.url) {
+                                } else if(data.output.url){
                                     info.url = self.conf.options.keepMetadata ? res.headers.location : data.output.url;
-                                } else {
+                                } else{
                                     err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
                                 }
                             }
-                        } else {
+                        } else{
                             err = new Error('Error: Statuscode ' + res.statusCode + ' returned');
                         }
-                    } else {
+                    } else{
                         err = new Error('No content returned from TinyPNG API for' + file.relative);
                     }
 
@@ -242,24 +242,24 @@ function TinyPNG(opt, obj) {
                 }.bind(this));
             },
 
-            download: function(url, cb) {
+            download: function(url, cb){
                 var options = {
                     url: url,
                     encoding: null
                 };
 
-                if(self.conf.options.keepMetadata) {
+                if(self.conf.options.keepMetadata){
                     options.json = {preserve: ["copyright", "creation"]};
                     options.headers = {
                         'Authorization': 'Basic ' + self.conf.token
                     };
                 }
-                request.get(options, function(err, res, body) {
+                request.get(options, function(err, res, body){
                     err = err ? new Error('Download failed for ' + url + ' with error: ' + err.message) : false;
                     var buffer = false;
-                    try {
+                    try{
                         buffer = new Buffer(body);
-                    } catch(err) {
+                    } catch(err){
                         return cb(new Error('Empty Body for Download with error: ' + err.message));
                     }
 
@@ -267,18 +267,18 @@ function TinyPNG(opt, obj) {
                 });
             },
 
-            handler: function(data, status) {
+            handler: function(data, status){
                 return new Error((data.error || 'Unknown') + ' (' + status + '): ' + (data.message || 'No message returned') + ' for ' + file.relative);
             },
 
-            get: function(cb) {
+            get: function(cb){
                 var self = this,
                     file = this.file;
 
-                self.upload(function(err, data) {
+                self.upload(function(err, data){
                     if(err) return cb(err, file);
 
-                    self.download(data.url, function(err, data) {
+                    self.download(data.url, function(err, data){
                         if(err) return cb(err, file);
 
                         var tinyFile = file.clone();
@@ -293,25 +293,25 @@ function TinyPNG(opt, obj) {
         };
     };
 
-    this.hasher = function(sigFile) {
+    this.hasher = function(sigFile){
         return {
             sigFile: sigFile || false,
             sigs: {},
 
-            calc: function(file, cb) {
+            calc: function(file, cb){
                 var md5 = crypto.createHash('md5').update(file.contents).digest('hex');
 
                 cb && cb(md5);
 
                 return cb ? this : md5;
             },
-            update: function(file, hash) {
+            update: function(file, hash){
                 this.changed = true;
                 this.sigs[file.path.replace(file.cwd, '')] = hash;
 
                 return this;
             },
-            compare: function(file, cb) {
+            compare: function(file, cb){
 
                 var md5 = this.calc(file),
                     filepath = file.path.replace(file.cwd, ''),
@@ -321,14 +321,14 @@ function TinyPNG(opt, obj) {
 
                 return cb ? this : {match: result, hash: md5};
             },
-            populate: function() {
+            populate: function(){
                 var data = false;
 
-                if(this.sigFile) {
-                    try {
+                if(this.sigFile){
+                    try{
                         data = fs.readFileSync(this.sigFile, 'utf-8');
                         if(data) data = JSON.parse(data);
-                    } catch(err) {
+                    } catch(err){
                         // meh
                     }
 
@@ -337,11 +337,11 @@ function TinyPNG(opt, obj) {
 
                 return this;
             },
-            write: function() {
-                if(this.changed) {
-                    try {
+            write: function(){
+                if(this.changed){
+                    try{
                         fs.writeFileSync(this.sigFile, JSON.stringify(this.sigs));
-                    } catch(err) {
+                    } catch(err){
                         // meh
                     }
                 }
@@ -352,31 +352,30 @@ function TinyPNG(opt, obj) {
     };
 
     this.utils = {
-        log: function(message, force) {
+        log: function(message, force){
             if(self.conf.options.log || force) gutil.log(PLUGIN_NAME, message);
 
             return this;
         },
 
-        glob: function(file, glob, opt) {
+        glob: function(file, glob, opt){
             opt = opt || {};
             var result = false;
 
             if(typeof glob === 'boolean') return glob;
 
-            try {
+            try{
                 result = minimatch(file.path, glob, opt);
-            } catch(err) {
-            }
+            } catch(err) {}
 
-            if(!result && !opt.matchBase) {
+            if(!result && !opt.matchBase){
                 opt.matchBase = true;
                 return this.glob(file, glob, opt);
             }
             return result;
         },
 
-        prettySize: function(bytes) {
+        prettySize: function(bytes){
             if(bytes === 0) return '0.00 B';
 
             var pos = Math.floor(Math.log(bytes) / Math.log(1024));
