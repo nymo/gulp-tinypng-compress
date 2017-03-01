@@ -44,7 +44,8 @@ function TinyPNG(opt, obj) {
             out: 0
         },
         compressed: 0,
-        skipped: 0
+        skipped: 0,
+        retries: 0
     };
 
     this.init = function(opt) {
@@ -145,9 +146,10 @@ function TinyPNG(opt, obj) {
             }
             if(opt.summarize) {
                 var stats = self.stats,
-                    info = util.format('Skipped: %s image%s, Compressed: %s image%s, Savings: %s (ratio: %s)',
+                    info = util.format('Skipped: %s image%s, Retries: %s, Compressed: %s image%s, Savings: %s (ratio: %s)',
                         stats.skipped,
                         stats.skipped == 1 ? '' : 's',
+                        stats.retries,
                         stats.compressed,
                         stats.compressed == 1 ? '' : 's',
                         (self.utils.prettySize(stats.total.in - stats.total.out)),
@@ -191,6 +193,9 @@ function TinyPNG(opt, obj) {
                             url: false,
                             count: (res && 'headers' in res && res.headers['compression-count']) || 0
                         };
+
+                    self.stats.retries += res.attempts;
+
                     if(err) {
                         err = new Error('Upload failed for ' + file.relative + ' with error: ' + err.message);
                     } else if(body) {
