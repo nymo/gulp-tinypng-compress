@@ -35,6 +35,8 @@ function TinyPNG(opt, obj) {
             parallelMax: 5,
             keepOriginal: true,
             keepMetadata: false,
+            retry_attempts: 10,
+            retry_delay: 10000
         }
     };
 
@@ -192,8 +194,8 @@ function TinyPNG(opt, obj) {
                     },
                     strictSSL: false,
                     body: file.contents,
-                    maxAttempts: 10,   // (default) try 10 times
-                    retryDelay: 10000,  // (default) wait for 10s before trying again
+                    maxAttempts: self.conf.retry_attempts,
+                    retryDelay: self.conf.retry_delay,
                     retryStrategy: request.RetryStrategies.HTTPOrNetworkError // (default) retry on 5xx or network errors
                 }, function (err, res, body) {
                     var data,

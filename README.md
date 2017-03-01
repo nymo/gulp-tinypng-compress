@@ -149,6 +149,18 @@ Same as `options.force` except ignores files if the glob is matched
 
 `--ignore` flag on the command line
 
+#### options.retry_attempts
+Type: `Integer`
+Default: `10`
+
+How many times to reattempt the upload if an error is encountered.
+
+#### options.retry_delay
+Type: `Integer`
+Default: `10000`
+
+How many milliseconds to delay before reattempting a failed upload.
+
 ### Deprecated/non-functional options
 
 **options.checkSigs** - Removed in favor of `options.sigFile`
