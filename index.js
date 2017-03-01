@@ -81,7 +81,7 @@ function TinyPNG(opt, obj) {
                 return cb();
             }
 
-            if(file.isStream()){
+            if(file.isStream()) {
                 this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported'));
                 return cb();
             }
@@ -127,7 +127,7 @@ function TinyPNG(opt, obj) {
 
                         self.hash.update(curr.file, curr.hash);
                     }
-                    if(opt.keepOriginal === false) {
+                    if (opt.keepOriginal === false) {
                         fs.writeFile(file.path, tinyFile.contents);
                     } else {
                         this.push(tinyFile);
@@ -215,7 +215,7 @@ function TinyPNG(opt, obj) {
                     if(err) {
                         err = new Error('Upload failed for ' + file.relative + ' with error: ' + err.message);
                     } else if(body) {
-                        if(res.statusCode == 200 || res.statusCode == 201){
+                        if(res.statusCode == 200 || res.statusCode == 201) {
                             try {
                                 data = JSON.parse(body);
                             } catch(e) {
@@ -225,7 +225,7 @@ function TinyPNG(opt, obj) {
                             if(!err) {
                                 if(data.error){
                                     err = this.handler(data, res.statusCode);
-                                } else if (data.output.url){
+                                } else if (data.output.url) {
                                     info.url = self.conf.options.keepMetadata ? res.headers.location : data.output.url;
                                 } else {
                                     err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
@@ -248,7 +248,7 @@ function TinyPNG(opt, obj) {
                     encoding: null
                 };
 
-                if(self.conf.options.keepMetadata) {
+                if (self.conf.options.keepMetadata) {
                     options.json = { preserve: ["copyright", "creation"] };
                     options.headers = {
                         'Authorization': 'Basic ' + self.conf.token
@@ -257,9 +257,9 @@ function TinyPNG(opt, obj) {
                 request.get(options, function(err, res, body) {
                     err = err ? new Error('Download failed for ' + url + ' with error: ' + err.message) : false;
                     var buffer = false;
-                    try{
+                     try {
                         buffer = new Buffer(body);
-                    } catch(err){
+                    } catch(err) {
                         return cb(new Error('Empty Body for Download with error: ' + err.message));
                     }
 
@@ -328,7 +328,7 @@ function TinyPNG(opt, obj) {
                     try {
                         data = fs.readFileSync(this.sigFile, 'utf-8');
                         if(data) data = JSON.parse(data);
-                    } catch(err){
+                    } catch(err) {
                         // meh
                     }
 
@@ -366,8 +366,7 @@ function TinyPNG(opt, obj) {
 
             try {
                 result = minimatch(file.path, glob, opt);
-            } catch(err) {
-            }
+            } catch(err) {}
 
             if(!result && !opt.matchBase) {
                 opt.matchBase = true;
