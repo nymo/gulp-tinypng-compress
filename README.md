@@ -149,13 +149,13 @@ Same as `options.force` except ignores files if the glob is matched
 
 `--ignore` flag on the command line
 
-#### options.retry_attempts
+#### options.retryAttempts
 Type: `Integer`
 Default: `10`
 
 How many times to reattempt the upload if an error is encountered.
 
-#### options.retry_delay
+#### options.retryDelay
 Type: `Integer`
 Default: `10000`
 
