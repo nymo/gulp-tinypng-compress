@@ -3,7 +3,7 @@ var test = process.env.NODE_ENV == 'test',
     throughParallel = require('through2-concurrent'),
     gutil = require('gulp-util'),
     chalk = gutil.colors,
-    request = require('request'),
+    request = require('requestretry'),
     path = require('path'),
     util = require('util'),
     fs = require('fs'),
@@ -181,7 +181,10 @@ function TinyPNG(opt, obj) {
                         'Authorization': 'Basic ' + self.conf.token
                     },
                     strictSSL: false,
-                    body: file.contents
+                    body: file.contents,
+                    maxAttempts: 10,   // (default) try 10 times
+                    retryDelay: 10000,  // (default) wait for 10s before trying again
+                    retryStrategy: request.RetryStrategies.HTTPOrNetworkError // (default) retry on 5xx or network errors
                 }, function(err, res, body) {
                     var data,
                         info = {
@@ -206,7 +209,7 @@ function TinyPNG(opt, obj) {
                                 } else {
                                     err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
                                 }
-                            }   
+                            }
                         } else {
                             err = new Error('Error: Statuscode ' + res.statusCode + ' returned');
                         }
@@ -234,11 +237,11 @@ function TinyPNG(opt, obj) {
                     err = err ? new Error('Download failed for ' + url + ' with error: ' + err.message) : false;
                     var buffer = false;
                      try {
-                        buffer = new Buffer(body); 
+                        buffer = new Buffer(body);
                     } catch(err) {
                         return cb(new Error('Empty Body for Download with error: ' + err.message));
                     }
-                    
+
                     return cb(err, buffer);
                 });
             },
