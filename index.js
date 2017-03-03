@@ -203,8 +203,7 @@ function TinyPNG(opt, obj) {
                             url: false,
                             count: (res && 'headers' in res && res.headers['compression-count']) || 0
                         };
-
-                    if(res.attempts > 1){
+                    if(res && res.attempts > 1){
                         self.stats.retries += res.attempts - 1;
                         self.stats.retried.push({
                             file: file.relative,

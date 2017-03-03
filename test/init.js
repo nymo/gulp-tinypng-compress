@@ -11,7 +11,7 @@ var fs = require('fs'),
 
     TinyPNG = require('../index');
 
-var key = 'KHOsJMrP6w-X3FVuyXdevV-vCnDDbqo9',
+var key = '9C2FqRbMQwDFtKyNSeJlu-VMP4-oEXH4',
 	cwd = __dirname,
 	TestFile = function(type) {
 		var file = cwd + '/assets/image' + (type ? '_' + type : '') + '.png';
@@ -88,7 +88,7 @@ describe('tinypng', function() {
 				});
 			});
 
-			it('uploads and returns bad gateway error', function(done) {
+			it('uploads and and tries to retry on bad gateway error', function(done) {
 				this.timeout(20010);
 
 				var gateway = nock('https://api.tinify.com')
@@ -97,7 +97,6 @@ describe('tinypng', function() {
 
 				inst.request(image).upload(function(err, data) {
 					expect(err).to.be.instanceof(Error);
-					expect(err.message).to.equal('Error: Statuscode 502 returned');
 					nock.cleanAll();
 					done();
 				});
@@ -330,7 +329,7 @@ describe('tinypng gulp', function() {
 	});
 
 	it('ignores files on the cli', function(done) {
-		this.timeout(20000);
+		this.timeout(30000);
 
 		var sh = spawn('node', ['node_modules/gulp/bin/gulp.js', 'tinypng', '--ignore', '*ge.png']);
 
