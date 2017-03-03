@@ -3,7 +3,7 @@ var test = process.env.NODE_ENV == 'test',
     throughParallel = require('through2-concurrent'),
     gutil = require('gulp-util'),
     chalk = gutil.colors,
-    request = require('request'),
+    request = require('requestretry'),
     path = require('path'),
     util = require('util'),
     fs = require('fs'),
@@ -35,6 +35,8 @@ function TinyPNG(opt, obj) {
             parallelMax: 5,
             keepOriginal: true,
             keepMetadata: false,
+            retryAttempts: 10,
+            retryDelay: 10000
         }
     };
 
@@ -44,7 +46,9 @@ function TinyPNG(opt, obj) {
             out: 0
         },
         compressed: 0,
-        skipped: 0
+        skipped: 0,
+        retries: 0,
+        retried: []
     };
 
     this.init = function(opt) {
@@ -145,9 +149,10 @@ function TinyPNG(opt, obj) {
             }
             if(opt.summarize) {
                 var stats = self.stats,
-                    info = util.format('Skipped: %s image%s, Compressed: %s image%s, Savings: %s (ratio: %s)',
+                    info = util.format('Skipped: %s image%s, Retries: %s, Compressed: %s image%s, Savings: %s (ratio: %s)',
                         stats.skipped,
                         stats.skipped == 1 ? '' : 's',
+                        stats.retries,
                         stats.compressed,
                         stats.compressed == 1 ? '' : 's',
                         (self.utils.prettySize(stats.total.in - stats.total.out)),
@@ -155,6 +160,13 @@ function TinyPNG(opt, obj) {
                     );
 
                 self.utils.log(info, true);
+
+                if(stats.retries > 0) {
+                    self.utils.log('Retry Attempts:', true);
+                    stats.retried.forEach(function(item) {
+                        self.utils.log(item.file + ': ' + item.attempts + ' attempts', true);
+                    });
+                }
             }
         });
     };
@@ -181,13 +193,24 @@ function TinyPNG(opt, obj) {
                         'Authorization': 'Basic ' + self.conf.token
                     },
                     strictSSL: false,
-                    body: file.contents
+                    body: file.contents,
+                    maxAttempts: self.conf.retryAttempts,
+                    retryDelay: self.conf.retryDelay,
+                    retryStrategy: request.RetryStrategies.HTTPOrNetworkError // (default) retry on 5xx or network errors
                 }, function(err, res, body) {
                     var data,
                         info = {
                             url: false,
                             count: (res && 'headers' in res && res.headers['compression-count']) || 0
                         };
+                    if(res && res.attempts > 1){
+                        self.stats.retries += res.attempts - 1;
+                        self.stats.retried.push({
+                            file: file.relative,
+                            attempts: res.attempts
+                        });
+                    }
+
                     if(err) {
                         err = new Error('Upload failed for ' + file.relative + ' with error: ' + err.message);
                     } else if(body) {
@@ -206,7 +229,7 @@ function TinyPNG(opt, obj) {
                                 } else {
                                     err = new Error('Invalid TinyPNG response object returned for ' + file.relative);
                                 }
-                            }   
+                            }
                         } else {
                             err = new Error('Error: Statuscode ' + res.statusCode + ' returned');
                         }
@@ -234,11 +257,11 @@ function TinyPNG(opt, obj) {
                     err = err ? new Error('Download failed for ' + url + ' with error: ' + err.message) : false;
                     var buffer = false;
                      try {
-                        buffer = new Buffer(body); 
+                        buffer = new Buffer(body);
                     } catch(err) {
                         return cb(new Error('Empty Body for Download with error: ' + err.message));
                     }
-                    
+
                     return cb(err, buffer);
                 });
             },
