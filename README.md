@@ -12,7 +12,7 @@ An actively maintained & developed fork of [gulp-tinypng-compress](https://githu
 - Added new option (keepMetadata) to preserve metadata. Currently only copyright and creation date is supported.
 - Added new option (keepOriginal) to override the original image instead of creating a new compressed file in the output path.
 - Updated minimatch plugin to current version to avoid deprecated warnings.
-- Fixed Problem with Bad Gateway errors receiving from the api. On error on one file the gulp process is still running and
+- Fixed Problem with Bad Gateway errors receiving from the api. On error the plugin tries on default 10 times a reattempt and simply skips the image if the server is still not reachable (Thanks to @kevinranks)
 compressing the next images.
 - On error the signature file is still being written for all successfully compressed files.
 - Added check for empty or broken images to be skipped and not send

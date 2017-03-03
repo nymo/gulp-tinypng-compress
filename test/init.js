@@ -11,7 +11,7 @@ var fs = require('fs'),
 
     TinyPNG = require('../index');
 
-var key = '9C2FqRbMQwDFtKyNSeJlu-VMP4-oEXH4',
+var key = 'KHOsJMrP6w-X3FVuyXdevV-vCnDDbqo9',
 	cwd = __dirname,
 	TestFile = function(type) {
 		var file = cwd + '/assets/image' + (type ? '_' + type : '') + '.png';
