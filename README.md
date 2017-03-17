@@ -40,7 +40,7 @@ var plumber = require('gulp-plumber');
 var tinypng = require('gulp-tinypng-extended');
 
 gulp.task('tinypng', function () {
-	gulp.src('images/src/**/*.{png,jpg,jpeg}')
+	return gulp.src('images/src/**/*.{png,jpg,jpeg}')
 		.pipe(plumber())
 		.pipe(tinypng({
 			key: 'API_KEY',
