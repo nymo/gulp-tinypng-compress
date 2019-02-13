@@ -55,7 +55,7 @@ describe('tinypng', function() {
 			expect(inst.conf.options.key).to.equal('test_string_0');
 			expect(inst.conf.options.sigFile).to.equal('test_string_1');
 
-			expect(inst.conf.token).to.equal(new Buffer('api:test_string_0').toString('base64'));
+			expect(inst.conf.token).to.equal(Buffer.from('api:test_string_0').toString('base64'));
 		});
 
 		it('throws error on missing API key', function() {
