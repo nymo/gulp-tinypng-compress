@@ -18,7 +18,7 @@ compressing the next images.
 - Added check for empty or broken images to be skipped and not send
 
 ## Install
-*Requires node `0.10.x` or above*
+*Requires node `0.6.x` or above*
 
 Install with [npm](https://npmjs.org/package/gulp-tinypng-extended) - In your project folder, run:
 
