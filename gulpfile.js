@@ -7,7 +7,7 @@ var gulp = require('gulp'),
     sigs = process.env.TINYPNG_SIGS ? true : false;
 
 gulp.task('tinypng', function() {
-    gulp.src(cwd + '/test/assets/image.png')
+    return gulp.src(cwd + '/test/assets/image.png')
         .pipe(plumber())
         .pipe(tinypng({
             key: process.env.TINYPNG_KEY || 'KHOsJMrP6w-X3FVuyXdevV-vCnDDbqo9',
