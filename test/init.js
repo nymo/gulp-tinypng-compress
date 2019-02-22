@@ -4,8 +4,8 @@ var fs = require('fs'),
 	spawn = require('child_process').spawn,
 	crypto = require('crypto'),
 	expect = require('chai').expect,
-    gutil = require('gulp-util'),
-    nock = require('nock'),
+	nock = require('nock'),
+	Vinyl = require('vinyl'),
 
 	dry = process.env.PNG_DRY ? true : false,
 
@@ -16,7 +16,7 @@ var key = 'KHOsJMrP6w-X3FVuyXdevV-vCnDDbqo9',
 	TestFile = function(type) {
 		var file = cwd + '/assets/image' + (type ? '_' + type : '') + '.png';
 
-		return new gutil.File({
+		return new Vinyl({
 			path: 'image.png',
 			contents: fs.readFileSync(file)
 		});
