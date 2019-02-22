@@ -1,6 +1,6 @@
 {
   "name": "gulp-tinypng-extended",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "TinyPNG API wrapper for compressing PNG & JPG images",
   "main": "index.js",
   "repository": {
@@ -40,22 +40,22 @@
     "png"
   ],
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=6.0.0"
   },
   "license": "MIT",
   "dependencies": {
     "gulp-plumber": "^1.1.0",
     "gulp-util": "~3.0.0",
     "minimatch": "^3.0.0",
-    "request": "~2.55.0",
-    "requestretry": "^1.12.0",
-    "through2": "^2.0.0",
-    "through2-concurrent": "^1.1.0"
+    "request": "~2.88.0",
+    "requestretry": "^3.1.0",
+    "through2": "^3.0.0",
+    "through2-concurrent": "^2.0.0"
   },
   "devDependencies": {
-    "chai": "^2.0.0",
-    "gulp": "^3.0.0",
-    "mocha": "^2.0.0",
-    "nock": "^9.0.4"
+    "chai": "^4.2.0",
+    "gulp": "^4.0.0",
+    "mocha": "^5.2.0",
+    "nock": "^10.0.6"
   }
 }

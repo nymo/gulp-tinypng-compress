@@ -64,7 +64,7 @@ function TinyPNG(opt, obj) {
 
         this.conf.options = opt; // export opts
 
-        this.conf.token = new Buffer('api:' + opt.key).toString('base64'); // prep key
+        this.conf.token = Buffer.from('api:' + opt.key).toString('base64'); // prep key
         this.hash = new this.hasher(opt.sigFile).populate(); // init hasher class
 
         return this;
@@ -257,7 +257,7 @@ function TinyPNG(opt, obj) {
                     err = err ? new Error('Download failed for ' + url + ' with error: ' + err.message) : false;
                     var buffer = false;
                      try {
-                        buffer = new Buffer(body);
+                        buffer = Buffer.from(body);
                     } catch(err) {
                         return cb(new Error('Empty Body for Download with error: ' + err.message));
                     }
