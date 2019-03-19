@@ -129,7 +129,7 @@ function TinyPNG(opt, obj) {
                         self.hash.update(curr.file, curr.hash);
                     }
                     if (opt.keepOriginal === false) {
-                        fs.writeFile(file.path, tinyFile.contents);
+                        fs.writeFileSync(file.path, tinyFile.contents);
                     } else {
                         this.push(tinyFile);
                     }
